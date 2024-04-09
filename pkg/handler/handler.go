@@ -10,15 +10,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	user_banner := router.Group("/user_banner")
 	{
-		user_banner.GET("/")
+		user_banner.GET("/", h.getUserBanner)
 	}
 
 	banner := router.Group("/banner")
 	{
-		banner.GET("/")
-		banner.POST("/")
-		banner.PATCH("/:id")
-		banner.DELETE("/:id")
+		banner.GET("/", h.getAllBannersByFeatureAndOrTag)
+		banner.POST("/", h.createBanner)
+		banner.PATCH("/:id", h.updateContentBannerById)
+		banner.DELETE("/:id", h.deleteBannerById)
 	}
 
 	return router
