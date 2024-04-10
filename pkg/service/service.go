@@ -1,6 +1,8 @@
 package service
 
-import "github.com/Manifoldz/AvitoTraineeBackend24/pkg/repository"
+import (
+	"github.com/Manifoldz/AvitoTraineeBackend24/pkg/repository"
+)
 
 type Banner interface {
 }

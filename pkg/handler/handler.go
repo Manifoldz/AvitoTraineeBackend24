@@ -16,17 +16,17 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
-	user_banner := router.Group("/user_banner")
+	user_banner := router.Group("/user_banner", h.userIndentity)
 	{
 		user_banner.GET("/", h.getUserBanner)
 	}
 
-	banner := router.Group("/banner")
+	admin_banner := router.Group("/banner", h.userIndentity)
 	{
-		banner.GET("/", h.getAllBannersByFeatureAndOrTag)
-		banner.POST("/", h.createBanner)
-		banner.PATCH("/:id", h.updateContentBannerById)
-		banner.DELETE("/:id", h.deleteBannerById)
+		admin_banner.GET("/", h.getAllBannersByFeatureAndOrTag)
+		admin_banner.POST("/", h.createBanner)
+		admin_banner.PATCH("/:id", h.updateContentBannerById)
+		admin_banner.DELETE("/:id", h.deleteBannerById)
 	}
 
 	return router
