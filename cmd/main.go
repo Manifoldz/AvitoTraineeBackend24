@@ -7,6 +7,7 @@ import (
 	"github.com/Manifoldz/AvitoTraineeBackend24/pkg/handler"
 	"github.com/Manifoldz/AvitoTraineeBackend24/pkg/repository"
 	"github.com/Manifoldz/AvitoTraineeBackend24/pkg/service"
+	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
 )
 
@@ -14,7 +15,21 @@ func main() {
 	if err := initConfig(); err != nil {
 		log.Fatalf("error initializing configs: %s", err.Error())
 	}
-	repos := repository.NewRepository()
+
+	db, err := repository.NewPostgresDB(repository.Config{
+		Host:     viper.GetString("db.Host"),
+		Port:     viper.GetString("db.Port"),
+		Username: viper.GetString("db.Username"),
+		Password: viper.GetString("db.Password"),
+		DBName:   viper.GetString("db.DBName"),
+		SSLMode:  viper.GetString("db.SSLMode"),
+	})
+
+	if err != nil {
+		log.Fatalf("failed to initialize db: %s", err.Error())
+	}
+
+	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 

@@ -19,7 +19,7 @@ CREATE TABLE tags
     name varchar(255) NOT NULL
 );
 
-CREATE TABLE BannerTags
+CREATE TABLE bannerFeatureTag
 (
     banner_id int NOT NULL REFERENCES banners (id) ON DELETE CASCADE,
     feature_id int NOT NULL REFERENCES features (id) ON DELETE CASCADE,
