@@ -1,8 +1,12 @@
 package repository
 
-import "github.com/jmoiron/sqlx"
+import (
+	banner "github.com/Manifoldz/AvitoTraineeBackend24"
+	"github.com/jmoiron/sqlx"
+)
 
 type Banner interface {
+	Create(ban banner.Banner) (int, error)
 }
 
 type UserBanner interface {
@@ -14,5 +18,7 @@ type Repository struct {
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
-	return &Repository{}
+	return &Repository{
+		Banner: NewBannerPostgres(db),
+	}
 }

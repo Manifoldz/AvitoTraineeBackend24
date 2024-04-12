@@ -9,14 +9,12 @@ CREATE TABLE banners
 
 CREATE TABLE features
 (
-    id SERIAL PRIMARY KEY,
-    name varchar(255) NOT NULL
+    id int PRIMARY KEY,
 );
 
 CREATE TABLE tags
 (
-    id SERIAL PRIMARY KEY,
-    name varchar(255) NOT NULL
+    id int PRIMARY KEY,
 );
 
 CREATE TABLE bannerFeatureTag

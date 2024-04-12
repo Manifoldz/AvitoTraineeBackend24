@@ -1,10 +1,12 @@
 package service
 
 import (
+	banner "github.com/Manifoldz/AvitoTraineeBackend24"
 	"github.com/Manifoldz/AvitoTraineeBackend24/pkg/repository"
 )
 
 type Banner interface {
+	Create(ban banner.Banner) (int, error)
 }
 
 type UserBanner interface {
@@ -15,6 +17,8 @@ type Service struct {
 	UserBanner
 }
 
-func NewService(*repository.Repository) *Service {
-	return &Service{}
+func NewService(repos *repository.Repository) *Service {
+	return &Service{
+		Banner: NewBannerBannerService(repos.Banner),
+	}
 }
