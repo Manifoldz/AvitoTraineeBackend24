@@ -1,7 +1,7 @@
-DROP TABLE bannerFeatureTag;
+DROP TABLE IF EXISTS bannerFeatureTag;
 
-DROP TABLE banners;
+DROP TABLE IF EXISTS banners;
 
-DROP TABLE features;
+DROP TABLE IF EXISTS features;
 
-DROP TABLE tags;
+DROP TABLE IF EXISTS tags;

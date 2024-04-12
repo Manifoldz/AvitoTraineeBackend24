@@ -26,4 +26,6 @@ func (h *Handler) userIndentity(c *gin.Context) {
 		newErrorResponse(c, http.StatusForbidden, "Пользователь не имеет доступа")
 		return
 	}
+
+	c.Next() //переход к след эндпоинту
 }
