@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	banner "github.com/Manifoldz/AvitoTraineeBackend24"
 	"github.com/jmoiron/sqlx"
@@ -24,7 +25,7 @@ func (r *BannerPostgres) Create(ban banner.Banner) (int, error) {
 	}
 
 	//проверим существует ли уже фича, если нет то добавим
-	featureExists, err := r.ensureExists(tx, featuresTable, ban.Feature_id)
+	featureExists, err := r.ensureExists(tx, featuresTable, int64(ban.Feature_id))
 	if err != nil {
 		tx.Rollback()
 		return 0, err
@@ -85,8 +86,8 @@ func (r *BannerPostgres) Create(ban banner.Banner) (int, error) {
 	return id, tx.Commit()
 }
 
-// метод проверяет - а не существует ли уже такой id?
-func (r *BannerPostgres) ensureExists(tx *sql.Tx, table string, id int) (bool, error) {
+// метод проверяет - а не существует ли уже такой id в таблице?
+func (r *BannerPostgres) ensureExists(tx *sql.Tx, table string, id int64) (bool, error) {
 	var exists bool
 	checkExistsQuery := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s WHERE id = $1)", table)
 	row := tx.QueryRow(checkExistsQuery, id)
@@ -96,4 +97,63 @@ func (r *BannerPostgres) ensureExists(tx *sql.Tx, table string, id int) (bool, e
 	}
 
 	return exists, nil
+}
+
+func (r *BannerPostgres) GetAllFiltered(queryParam *banner.QueryParams) ([]banner.Banner, error) {
+	var queryBuilder strings.Builder
+	var args []interface{}
+	var argCounter int = 1
+
+	queryBuilder.WriteString(`
+	SELECT b.id AS banner_id, bft.feature_id, array_agg(bft.tag_id) AS tag_ids, 
+		b.content, b.is_active, b.created_at, b.updated_at`)
+	queryBuilder.WriteString(fmt.Sprintf(" FROM %s b JOIN %s bft ON b.id = bft.banner_id", bannersTable, bannerFeatureTagTable))
+
+	// Добавление фильтрации по feature_id, если он передан
+	if queryParam.FeatureID != nil {
+		queryBuilder.WriteString(fmt.Sprintf(" WHERE feature_id = $%d", argCounter))
+		args = append(args, *queryParam.FeatureID)
+		argCounter++
+	}
+
+	// Добавление фильтрации по tag_id, если он передан и уже есть условие WHERE
+	if queryParam.TagID != nil {
+		if queryParam.FeatureID != nil {
+			queryBuilder.WriteString(" AND")
+		} else {
+			queryBuilder.WriteString(" WHERE")
+		}
+		queryBuilder.WriteString(fmt.Sprintf(" tag_id = $%d", argCounter))
+		args = append(args, *queryParam.TagID)
+		argCounter++
+	}
+
+	// Добавление группировки
+	queryBuilder.WriteString(` 
+	GROUP BY
+		b.id,
+		bft.feature_id,
+		b.content,
+		b.is_active,
+		b.created_at,
+		b.updated_at`)
+
+	// Добавление пагинации
+	insertLimit := 10 // по умолчанию лимит
+	insertOffset := 0 // по умолчанию оффсет
+	if queryParam.Limit != nil {
+		insertLimit = *queryParam.Limit
+	}
+	if queryParam.Offset != nil {
+		insertOffset = *queryParam.Offset
+	}
+	queryBuilder.WriteString(fmt.Sprintf(" LIMIT $%d OFFSET $%d", argCounter, argCounter+1))
+	args = append(args, insertLimit, insertOffset)
+
+	// Выполнение запроса
+	finalQuery := queryBuilder.String()
+	var banners []banner.Banner
+	err := r.db.Select(&banners, finalQuery, args...)
+
+	return banners, err
 }
