@@ -9,12 +9,12 @@ CREATE TABLE banners
 
 CREATE TABLE features
 (
-    id int PRIMARY KEY,
+    id int PRIMARY KEY
 );
 
 CREATE TABLE tags
 (
-    id int PRIMARY KEY,
+    id int PRIMARY KEY
 );
 
 CREATE TABLE bannerFeatureTag
