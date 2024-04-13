@@ -56,6 +56,12 @@ post-createBanner:
 	curl -i -X POST http://localhost:8000/banner/ \
 	-H "Content-Type: application/json" \
 	-H "token: admin" \
-	-d '{"feature_id": 1, "tag_ids": [1,3,5], \
-	"content": {"title": "some_title", "text": "some_text", "url": "some_url"}, "is_active": true}'
+	-d '{"feature_id": 15, "tag_ids": [12,31,5], \
+	"content": {"title": "another_title", "text": "another_text", "url": "another_url"}, "is_active": false}'
 
+# Запросить все баннеры с фильтрацией
+post-getBannerFiltered:
+	curl -i -X GET http://localhost:8000/banner/ \
+	-H "Content-Type: application/json" \
+	-H "token: admin" \
+	-d '{"feature_id": 9, "tag_id": 5, "limit": 3, "offset": 0}'

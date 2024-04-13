@@ -44,7 +44,6 @@ func (h *Handler) getAllBannersByFeatureAndOrTag(c *gin.Context) {
 	c.JSON(http.StatusOK, getAllBannersByFeatureAndOrTagResponse{
 		Data: banners,
 	})
-
 }
 
 func (h *Handler) createBanner(c *gin.Context) {
