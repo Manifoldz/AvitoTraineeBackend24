@@ -7,7 +7,7 @@ PASSWORD=qwerty
 HOST_PORT=5436
 
 # Указание что это не названия файлов
-.PHONY: docker-run docker-stop docker-status docker-logs migrate-up migrate-down git-push
+.PHONY: docker-run docker-stop docker-status docker-logs migrate-up migrate-down git-push post-createBanner
 
 # FOR DOCKER #
 #################################################################################################################
@@ -34,12 +34,13 @@ docker-logs:
 #################################################################################################################
 # Migrate up
 migrate-up:
-	migrate -path ./schema -database 'postgres://postgres:$(PASSWORD)@localhost:$(HOST_PORT)/postgres?sslmode=disable' up
+	migrate -path ./schema -database \
+	'postgres://postgres:$(PASSWORD)@localhost:$(HOST_PORT)/postgres?sslmode=disable' up
 
 # Migrate down
 migrate-down:
-	migrate -path ./schema -database 'postgres://postgres:$(PASSWORD)@localhost:$(HOST_PORT)/postgres?sslmode=disable' down
-
+	migrate -path ./schema -database \
+	'postgres://postgres:$(PASSWORD)@localhost:$(HOST_PORT)/postgres?sslmode=disable' down
 # FOR GIT #
 #################################################################################################################
 # Commit+push в свою ветку
@@ -47,3 +48,14 @@ git-push:
 	git add .
 	git commit -m "$(m)"
 	git push origin develop
+
+# FOR CURL #
+#################################################################################################################
+# Создать баннер
+post-createBanner:
+	curl -i -X POST http://localhost:8000/banner/ \
+	-H "Content-Type: application/json" \
+	-H "token: admin" \
+	-d '{"feature_id": 1, "tag_ids": [1,3,5], \
+	"content": {"title": "some_title", "text": "some_text", "url": "some_url"}, "is_active": true}'
+

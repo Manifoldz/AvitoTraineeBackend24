@@ -21,7 +21,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		user_banner.GET("/", h.getUserBanner)
 	}
 
-	admin_banner := router.Group("/banner") // !!!не забыть вернуть проверку токена
+	admin_banner := router.Group("/banner", h.userIndentity) // !!!не забыть вернуть проверку токена
 	{
 		admin_banner.GET("/", h.getAllBannersByFeatureAndOrTag)
 		admin_banner.POST("/", h.createBanner)
