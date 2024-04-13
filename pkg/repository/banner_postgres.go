@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 
 	banner "github.com/Manifoldz/AvitoTraineeBackend24"
@@ -58,9 +59,15 @@ func (r *BannerPostgres) Create(ban banner.Banner) (int, error) {
 		}
 	}
 
+	contentJSON, err := json.Marshal(ban.Content)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
 	var id int
 	createBannerQuery := fmt.Sprintf("INSERT INTO %s (content, is_active) VALUES ($1, $2) RETURNING id", bannersTable)
-	row := tx.QueryRow(createBannerQuery, ban.Content, ban.Is_active)
+	row := tx.QueryRow(createBannerQuery, contentJSON, ban.Is_active)
 	if err := row.Scan(&id); err != nil {
 		tx.Rollback()
 		return 0, err
