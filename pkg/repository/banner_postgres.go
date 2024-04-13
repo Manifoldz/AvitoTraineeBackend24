@@ -85,7 +85,7 @@ func (r *BannerPostgres) Create(ban banner.Banner) (int, error) {
 	return id, tx.Commit()
 }
 
-// метод проверяет - а не существует ли уже такой id?
+// метод проверяет - а не существует ли уже такой id в таблице?
 func (r *BannerPostgres) ensureExists(tx *sql.Tx, table string, id int) (bool, error) {
 	var exists bool
 	checkExistsQuery := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s WHERE id = $1)", table)
@@ -96,4 +96,9 @@ func (r *BannerPostgres) ensureExists(tx *sql.Tx, table string, id int) (bool, e
 	}
 
 	return exists, nil
+}
+
+func (r *BannerPostgres) GetAllFiltered(queryPar *banner.QueryParams) ([]banner.Banner, error) {
+	var banners []banner.Banner
+	return banners, nil
 }

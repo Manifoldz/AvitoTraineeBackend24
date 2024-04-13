@@ -16,3 +16,7 @@ func NewBannerBannerService(repo repository.Banner) *BannerBannerService {
 func (s *BannerBannerService) Create(ban banner.Banner) (int, error) {
 	return s.repo.Create(ban)
 }
+
+func (s *BannerBannerService) GetAllFiltered(newQueryParam *banner.QueryParams) ([]banner.Banner, error) {
+	return s.repo.GetAllFiltered(newQueryParam)
+}
