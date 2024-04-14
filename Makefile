@@ -51,17 +51,44 @@ git-push:
 
 # FOR CURL #
 #################################################################################################################
-# Создать баннер
+# Создать баннеры
 post-createBanner:
 	curl -i -X POST http://localhost:8000/banner/ \
 	-H "Content-Type: application/json" \
 	-H "token: admin" \
-	-d '{"feature_id": 15, "tag_ids": [12,31,5], \
-	"content": {"title": "another_title", "text": "another_text", "url": "another_url"}, "is_active": false}'
+	-d '{"feature_id": 1, "tag_ids": [1,2,3], \
+	"content": {"title": "another_title", "text": "another_text", "url": "another_url"}, "is_active": true}'
+	curl -i -X POST http://localhost:8000/banner/ \
+	-H "Content-Type: application/json" \
+	-H "token: admin" \
+	-d '{"feature_id": 2, "tag_ids": [1,5,4], \
+	"content": {"title": "some_title", "text": "some_text", "url": "some_url"}, "is_active": false}'
+	curl -i -X POST http://localhost:8000/banner/ \
+	-H "Content-Type: application/json" \
+	-H "token: admin" \
+	-d '{"feature_id": 2, "tag_ids": [6,7,8], \
+	"content": {"title": "title", "text": "text", "url": "url"}, "is_active": false}'
+	curl -i -X POST http://localhost:8000/banner/ \
+	-H "Content-Type: application/json" \
+	-H "token: user" \
+	-d '{"feature_id": 4, "tag_ids": [6,7,8], \
+	"content": {"title": "title", "text": "text", "url": "url"}, "is_active": false}'
 
 # Запросить все баннеры с фильтрацией
 post-getBannerFiltered:
 	curl -i -X GET http://localhost:8000/banner/ \
 	-H "Content-Type: application/json" \
 	-H "token: admin" \
-	-d '{"feature_id": 9}'
+	-d '{"tag_id": 1, "limit": 10, "offset": 0}'
+	curl -i -X GET http://localhost:8000/banner/ \
+	-H "Content-Type: application/json" \
+	-H "token: admin" \
+	-d '{"feature_id": 2, "limit": 10, "offset": 0}'
+	curl -i -X GET http://localhost:8000/banner/ \
+	-H "Content-Type: application/json" \
+	-H "token: admin" \
+	-d '{}'
+	curl -i -X GET http://localhost:8000/banner/ \
+	-H "Content-Type: application/json" \
+	-H "token: user" \
+	-d '{"feature_id": 2, "limit": 10, "offset": 0}'

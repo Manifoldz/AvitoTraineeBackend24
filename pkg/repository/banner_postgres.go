@@ -104,12 +104,15 @@ func (r *BannerPostgres) GetAllFiltered(requestParam *banner.RequestParams) ([]b
 	var args []interface{}
 	var argCounter int = 1
 
+	// Добавление выбора, исх.таблиц, объединения
 	queryBuilder.WriteString(`
 	SELECT b.id AS banner_id, bft.feature_id, array_agg(bft.tag_id) AS tag_ids, 
 		b.content, b.is_active, b.created_at, b.updated_at`)
 	queryBuilder.WriteString(fmt.Sprintf(" FROM %s b JOIN %s bft ON b.id = bft.banner_id", bannersTable, bannerFeatureTagTable))
 
-	fmt.Print(requestParam)
+	// Добавление подзапроса с фильтрацией и фильтрации во внешнем запросе
+	queryBuilder.WriteString(fmt.Sprintf(" WHERE b.id IN (SELECT banner_id FROM %s", bannerFeatureTagTable))
+
 	// Добавление фильтрации по feature_id, если он передан
 	if requestParam.FeatureID != nil {
 		queryBuilder.WriteString(fmt.Sprintf(" WHERE feature_id = $%d", argCounter))
@@ -130,7 +133,7 @@ func (r *BannerPostgres) GetAllFiltered(requestParam *banner.RequestParams) ([]b
 	}
 
 	// Добавление группировки
-	queryBuilder.WriteString(` 
+	queryBuilder.WriteString(`) 
 	GROUP BY
 		b.id,
 		bft.feature_id,
