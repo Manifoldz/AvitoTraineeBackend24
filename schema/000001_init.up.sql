@@ -25,7 +25,6 @@ CREATE TABLE bannerFeatureTag
     PRIMARY KEY (banner_id, feature_id, tag_id)
 );
 
-/* В PostgreSQL нет встроенного функционала ON UPDATE, поэтому для автоматического обновления поля updated_at при каждом изменении записи необходимо создать триггер:
 CREATE OR REPLACE FUNCTION update_modified_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -36,4 +35,4 @@ $$ language 'plpgsql';
 
 CREATE TRIGGER update_updated_at BEFORE UPDATE
 ON banners FOR EACH ROW
-EXECUTE FUNCTION update_modified_column(); */
+EXECUTE FUNCTION update_modified_column();

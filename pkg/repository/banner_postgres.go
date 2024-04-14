@@ -99,37 +99,41 @@ func (r *BannerPostgres) ensureExists(tx *sql.Tx, table string, id int64) (bool,
 	return exists, nil
 }
 
-func (r *BannerPostgres) GetAllFiltered(queryParam *banner.QueryParams) ([]banner.Banner, error) {
+func (r *BannerPostgres) GetAllFiltered(requestParam *banner.RequestParams) ([]banner.Banner, error) {
 	var queryBuilder strings.Builder
 	var args []interface{}
 	var argCounter int = 1
 
+	// Добавление выбора, исх.таблиц, объединения
 	queryBuilder.WriteString(`
 	SELECT b.id AS banner_id, bft.feature_id, array_agg(bft.tag_id) AS tag_ids, 
 		b.content, b.is_active, b.created_at, b.updated_at`)
 	queryBuilder.WriteString(fmt.Sprintf(" FROM %s b JOIN %s bft ON b.id = bft.banner_id", bannersTable, bannerFeatureTagTable))
 
+	// Добавление подзапроса с фильтрацией и фильтрации во внешнем запросе
+	queryBuilder.WriteString(fmt.Sprintf(" WHERE b.id IN (SELECT banner_id FROM %s", bannerFeatureTagTable))
+
 	// Добавление фильтрации по feature_id, если он передан
-	if queryParam.FeatureID != nil {
+	if requestParam.FeatureID != nil {
 		queryBuilder.WriteString(fmt.Sprintf(" WHERE feature_id = $%d", argCounter))
-		args = append(args, *queryParam.FeatureID)
+		args = append(args, *requestParam.FeatureID)
 		argCounter++
 	}
 
 	// Добавление фильтрации по tag_id, если он передан и уже есть условие WHERE
-	if queryParam.TagID != nil {
-		if queryParam.FeatureID != nil {
+	if requestParam.TagID != nil {
+		if requestParam.FeatureID != nil {
 			queryBuilder.WriteString(" AND")
 		} else {
 			queryBuilder.WriteString(" WHERE")
 		}
 		queryBuilder.WriteString(fmt.Sprintf(" tag_id = $%d", argCounter))
-		args = append(args, *queryParam.TagID)
+		args = append(args, *requestParam.TagID)
 		argCounter++
 	}
 
 	// Добавление группировки
-	queryBuilder.WriteString(` 
+	queryBuilder.WriteString(`) 
 	GROUP BY
 		b.id,
 		bft.feature_id,
@@ -141,11 +145,11 @@ func (r *BannerPostgres) GetAllFiltered(queryParam *banner.QueryParams) ([]banne
 	// Добавление пагинации
 	insertLimit := 10 // по умолчанию лимит
 	insertOffset := 0 // по умолчанию оффсет
-	if queryParam.Limit != nil {
-		insertLimit = *queryParam.Limit
+	if requestParam.Limit != nil {
+		insertLimit = *requestParam.Limit
 	}
-	if queryParam.Offset != nil {
-		insertOffset = *queryParam.Offset
+	if requestParam.Offset != nil {
+		insertOffset = *requestParam.Offset
 	}
 	queryBuilder.WriteString(fmt.Sprintf(" LIMIT $%d OFFSET $%d", argCounter, argCounter+1))
 	args = append(args, insertLimit, insertOffset)
