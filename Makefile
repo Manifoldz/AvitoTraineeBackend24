@@ -14,13 +14,17 @@ HOST_PORT=5436
 # Имя контейнера Docker
 CONTAINER_NAME=serviceBanner-db
 
-# Запуск контейнера Docker c удалением при остановке
+# Запуск контейнера Docker
 docker-run:
-	docker run --name=$(CONTAINER_NAME) -e POSTGRES_PASSWORD=$(PASSWORD) -p $(HOST_PORT):5432 -d --rm postgres
+	docker run --name=$(CONTAINER_NAME) -e POSTGRES_PASSWORD=$(PASSWORD) -p $(HOST_PORT):5432 -d postgres
 
 # Остановка контейнера Docker
 docker-stop:
 	docker stop $(CONTAINER_NAME)
+
+# Продолжить работу контейнера
+docker-start:
+	docker start $(CONTAINER_NAME)
 
 # Вывод статуса всех контейнеров Docker
 docker-status:
@@ -92,3 +96,11 @@ post-getBannerFiltered:
 	-H "Content-Type: application/json" \
 	-H "token: user" \
 	-d '{"feature_id": 2, "limit": 10, "offset": 0}'
+
+# FOR INSTALL #
+#################################################################################################################
+# Установка docker и migrate. Установка внутрь докера postgres.
+install:
+	brew install --cask docker
+	brew install golang-migrate
+	docker pull postgres
