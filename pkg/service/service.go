@@ -7,7 +7,7 @@ import (
 
 type Banner interface {
 	Create(ban banner.Banner) (int, error)
-	GetAllFiltered(queryPar *banner.QueryParams) ([]banner.Banner, error)
+	GetAllFiltered(requestParam *banner.RequestParams) ([]banner.Banner, error)
 }
 
 type UserBanner interface {

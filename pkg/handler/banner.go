@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 
 	banner "github.com/Manifoldz/AvitoTraineeBackend24"
 	"github.com/gin-gonic/gin"
@@ -16,26 +15,15 @@ func (h *Handler) getAllBannersByFeatureAndOrTag(c *gin.Context) {
 	// Получение параметров фильтрации и пагинации из запроса
 
 	//использую указатели, чтобы не запрещать использовать отрицательные и нулевые значения
-	var newQueryParam banner.QueryParams
+	var newRequestParam banner.RequestParams
 	var err error
 
-	if newQueryParam.FeatureID, err = getParametr(c, "feature_id"); err != nil {
+	if err := c.ShouldBindJSON(&newRequestParam); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "Некорректные данные")
 		return
 	}
-	if newQueryParam.TagID, err = getParametr(c, "tag_id"); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "Некорректные данные")
-		return
-	}
-	if newQueryParam.Limit, err = getParametr(c, "limit"); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "Некорректные данные")
-		return
-	}
-	if newQueryParam.Offset, err = getParametr(c, "offset"); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "Некорректные данные")
-		return
-	}
-	banners, err := h.services.Banner.GetAllFiltered(&newQueryParam)
+
+	banners, err := h.services.Banner.GetAllFiltered(&newRequestParam)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -71,17 +59,4 @@ func (h *Handler) updateContentBannerById(c *gin.Context) {
 
 func (h *Handler) deleteBannerById(c *gin.Context) {
 
-}
-
-// Функция для извлечения параметра из запроса
-func getParametr(c *gin.Context, paramName string) (*int, error) {
-	paramValue := c.Query(paramName)
-	if paramValue == "" {
-		return nil, nil // Параметр не был передан
-	}
-	intValue, err := strconv.Atoi(paramValue)
-	if err != nil {
-		return nil, err // Параметр не является допустимым целым числом
-	}
-	return &intValue, nil
 }

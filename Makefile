@@ -64,4 +64,4 @@ post-getBannerFiltered:
 	curl -i -X GET http://localhost:8000/banner/ \
 	-H "Content-Type: application/json" \
 	-H "token: admin" \
-	-d '{"feature_id": 9, "tag_id": 5, "limit": 3, "offset": 0}'
+	-d '{"feature_id": 9}'

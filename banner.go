@@ -14,9 +14,9 @@ type Banner struct {
 	Updated_at string `json:"updated_at" db:"updated_at"`
 }
 
-type QueryParams struct {
-	FeatureID *int
-	TagID     *int
-	Limit     *int
-	Offset    *int
+type RequestParams struct {
+	FeatureID *int `json:"feature_id"`
+	TagID     *int `json:"tag_id"`
+	Limit     *int `json:"limit"`
+	Offset    *int `json:"offset"`
 }
