@@ -6,9 +6,6 @@ PASSWORD=qwerty
 # Порт на хосте
 HOST_PORT=5436
 
-# Указание что это не названия файлов
-.PHONY: docker-run docker-stop docker-status docker-logs migrate-up migrate-down git-push post-createBanner
-
 # FOR DOCKER #
 #################################################################################################################
 # Имя контейнера Docker
@@ -25,6 +22,10 @@ docker-stop:
 # Продолжить работу контейнера
 docker-start:
 	docker start $(CONTAINER_NAME)
+
+# Удалить контейнер
+docker-remove: docker-stop
+	docker rm $(CONTAINER_NAME)
 
 # Вывод статуса всех контейнеров Docker
 docker-status:
@@ -104,3 +105,8 @@ install:
 	brew install --cask docker
 	brew install golang-migrate
 	docker pull postgres
+
+# Запуск приложения
+go-start:
+	go run cmd/main.go
+
