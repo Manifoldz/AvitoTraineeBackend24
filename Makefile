@@ -80,7 +80,7 @@ post-createBanner:
 	"content": {"title": "title", "text": "text", "url": "url"}, "is_active": false}'
 
 # Запросить все баннеры с фильтрацией
-post-getBannerFiltered:
+get-getBannerFiltered:
 	curl -i -X GET http://localhost:8000/banner/ \
 	-H "Content-Type: application/json" \
 	-H "token: admin" \
